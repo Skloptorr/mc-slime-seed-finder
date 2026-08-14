@@ -1,0 +1,14 @@
+# 编译产物
+*.exe
+# 编译的 C 验证二进制（保留源码 test_slime.c）
+/test_slime
+# checkpoint / 测试数据
+*.dat
+# Python 缓存
+__pycache__/
+*.pyc
+# 测试输出
+err.txt
+out.txt
+# GUI 日志文件
+logs/
