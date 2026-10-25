@@ -12,3 +12,7 @@ err.txt
 out.txt
 # GUI 日志文件
 logs/
+
+# 企划/过程记录类文档，不入库
+docs/执行清单.md
+docs/项目企划及对话记录.md

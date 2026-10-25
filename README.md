@@ -6,6 +6,27 @@
 - **目标**：5×5 窗口（25 区块）内 ≥19 个史莱姆区块（概率 76%；正常期望仅 2.5 个，极端稀有）
 - **实测成果**：seed = `157140467`（窗口 (194,48) 恰好 19 个，CPU 独立复核通过）
 
+> **English summary**
+>
+> A GPU-accelerated seed finder for Minecraft Java. Scans the 2^48 seed space for
+> a 5×5 chunk window containing **≥19 slime chunks** out of 25, where the normal
+> expectation is 2.5 — a ~76% hit rate for such a window, which makes seeds that
+> satisfy it extremely rare.
+>
+> Found **seed `157140467`**, window (194, 48), exactly 19 slime chunks; verified
+> independently against the numpy reference.
+>
+> The slime-chunk predicate is a faithful reimplementation of the Java algorithm
+> **including its 32-bit integer overflow behaviour**, confirmed against the 26.2
+> server bytecode. Getting the truncation right is what makes this correct;
+> doing it in 64-bit gives different answers.
+>
+> Three implementations cross-check each other: CUDA (bitpack, register-resident),
+> numpy CPU reference, and a plain-C verifier. The bitpack kernel packs the 5×401
+> row bitmap into 35 `uint64` registers and tests windows with a single `__popcll`,
+> reaching **1.26–1.39M seeds/s** on an RTX 4070 SUPER — 12× the naive version,
+> which spilled to local memory.
+
 ## 特性
 
 - ✅ 完全模拟 Java 版史莱姆区块判定算法（含 **32 位 int 溢出截断**，已对 26.2 版本字节码实测确认）
@@ -125,9 +146,7 @@ python tests/test_consistency.py
 │   └── test_consistency.py   # CPU vs GPU 一致性
 └── docs/
     ├── SPEC.md               # 规格书
-    ├── DEVELOPMENT_LOG.md    # 开发日志（含 26.2 验证、性能优化记录）
-    ├── 执行清单.md            # 任务清单
-    └── 项目企划及对话记录.md  # 原始企划
+    └── DEVELOPMENT_LOG.md    # 开发日志（含 26.2 验证、性能优化记录）
 ```
 
 ## 许可

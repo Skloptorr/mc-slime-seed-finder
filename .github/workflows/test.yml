@@ -1,0 +1,28 @@
+﻿name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  cpu-reference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install numpy
+
+      # The C verifier is the independent implementation of the same predicate,
+      # so build it too: if it and numpy ever disagree, one of them is wrong.
+      - name: Build the C verifier
+        run: gcc -O2 -o test_slime test_slime.c
+
+      - name: Regression on a known seed
+        run: python -c "import slime_search as s; s.verify_known_seed()"
+
+      - name: Small-range consistency
+        run: python tests/test_consistency.py
